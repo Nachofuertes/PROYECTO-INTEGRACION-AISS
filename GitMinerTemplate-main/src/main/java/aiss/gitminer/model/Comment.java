@@ -8,7 +8,7 @@ import javax.annotation.Generated;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-
+// prueva de commit
 @Entity
 @Table(name = "Comment")
 public class Comment {
