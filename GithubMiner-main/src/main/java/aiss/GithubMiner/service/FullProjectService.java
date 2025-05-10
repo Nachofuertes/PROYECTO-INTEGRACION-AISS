@@ -38,7 +38,7 @@ public class FullProjectService {
     public Issue[] getIssues(String owner, String repo) {
         return restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/issues", Issue[].class);
     }
-
+    //hola
 
     public List<Issue> getIssueCompleta(String owner, String repo) {
 
