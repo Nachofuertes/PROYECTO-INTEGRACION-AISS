@@ -18,6 +18,6 @@ public class GithubMinerMainApplication {
 	public RestTemplate restTemplate(RestTemplateBuilder builder) { return builder.build(); }
 
 
-	}
+
 
 }
