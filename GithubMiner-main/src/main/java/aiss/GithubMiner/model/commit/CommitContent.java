@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 
-public class Commit {
+public class CommitContent {
     @JsonProperty("message")
     private String message;
     @JsonProperty("Author")

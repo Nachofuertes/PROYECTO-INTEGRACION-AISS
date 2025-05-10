@@ -1,7 +1,6 @@
 
 package aiss.GithubMiner.model.issue;
 
-import aiss.GithubMiner.model.Comment;
 import aiss.GithubMiner.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -31,6 +30,13 @@ public class Issue {
     private List<String> labels;
     @JsonProperty("reactions ")
     private Reaction reactions;
+    @JsonProperty("user")
+    private User author;
+    @JsonProperty("assignee")
+    private User assignee; // Usuario asignado (si hay solo uno)
+
+    @JsonProperty("assignees")
+    private List<User> assignees; // Lista de usuarios asignados
 
     public static class Reaction {
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -47,6 +53,30 @@ public class Issue {
             this.votes = votes;
         }
 
+    }
+
+    public List<User> getAssignees() {
+        return assignees;
+    }
+
+    public void setAssignees(List<User> assignees) {
+        this.assignees = assignees;
+    }
+
+    public User getAssignee() {
+        return assignee;
+    }
+
+    public void setAssignee(User assignee) {
+        this.assignee = assignee;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 
     public String getId() {
@@ -121,7 +151,6 @@ public class Issue {
         this.reactions = reactions;
     }
 
-
     @Override
     public String toString() {
         return "Issue{" +
@@ -134,6 +163,9 @@ public class Issue {
                 ", closedAt='" + closedAt + '\'' +
                 ", labels=" + labels +
                 ", reactions=" + reactions +
+                ", author=" + author +
+                ", assignee=" + assignee +
+                ", assignees=" + assignees +
                 '}';
     }
 }

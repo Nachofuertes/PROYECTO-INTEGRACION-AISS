@@ -1,6 +1,6 @@
 package aiss.GithubMiner.model;
 
-import aiss.GithubMiner.model.commit.ListCommits;
+import aiss.GithubMiner.model.commit.Commit;
 import aiss.GithubMiner.model.issue.Issue;
 
 import java.util.List;
@@ -8,12 +8,12 @@ import java.util.List;
 public class FullProject {
 
     private Project project;
-    private List<ListCommits> commits;
+    private List<Commit> commits;
     private List<Issue> issues;
     private List<Comment> comments;
-    private List<User> users;
+    private User users;
 
-    public FullProject(Project project, List<ListCommits> commits, List<Issue> issues, List<Comment> comments, List<User> users) {
+    public FullProject(Project project, List<Commit> commits, List<Issue> issues, List<Comment> comments, User users) {
         this.project = project;
         this.commits = commits;
         this.issues = issues;
@@ -29,11 +29,11 @@ public class FullProject {
         this.project = project;
     }
 
-    public List<ListCommits> getCommits() {
+    public List<Commit> getCommits() {
         return commits;
     }
 
-    public void setCommits(List<ListCommits> commits) {
+    public void setCommits(List<Commit> commits) {
         this.commits = commits;
     }
 
@@ -53,11 +53,11 @@ public class FullProject {
         this.comments = comments;
     }
 
-    public List<User> getUsers() {
+    public User getUsers() {
         return users;
     }
 
-    public void setUsers(List<User> users) {
+    public void setUsers(User users) {
         this.users = users;
     }
 
