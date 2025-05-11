@@ -80,6 +80,9 @@ public class BitBucketService {
         String nextUrl = initialUrl;
         int pagesFetched = 0;
 
+        // Jackson ObjectMapper para convertir Map a objeto directamente
+        com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
         while (nextUrl != null && pagesFetched < maxPages) {
             try {
                 ResponseEntity<Map> response = restTemplate.getForEntity(nextUrl, Map.class);
@@ -88,9 +91,13 @@ public class BitBucketService {
                     List<Map<String, Object>> values = (List<Map<String, Object>>) response.getBody().get("values");
                     if (values != null) {
                         for (Map<String, Object> item : values) {
-                            String selfUrl = (String) ((Map<String, Object>) item.get("links")).get("self");
-                            T obj = restTemplate.getForObject(selfUrl, type);
-                            if (obj != null) results.add(obj);
+                            try {
+                                String json = objectMapper.writeValueAsString(item);
+                                T obj = objectMapper.readValue(json, type);
+                                if (obj != null) results.add(obj);
+                            } catch (Exception e) {
+                                System.out.println("❌ Error deserializando item: " + e.getMessage());
+                            }
                         }
                     }
 
@@ -104,8 +111,9 @@ public class BitBucketService {
         return results;
     }
 
+
     public void postProject(Project project) {
-        String gitMinerUrl = "http://localhost:8081/gitminer/projects";
+        String gitMinerUrl = "http://localhost:8080/gitminer/projects";
 
         try {
             ResponseEntity<Void> response = restTemplate.postForEntity(gitMinerUrl, project, Void.class);

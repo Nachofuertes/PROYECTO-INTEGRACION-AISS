@@ -1,5 +1,6 @@
 package aiss.BitBucketMiner.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -18,12 +19,15 @@ public class Issue {
     private Content content;
 
     @JsonProperty("created_on")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
     private LocalDateTime createdAt;
 
     @JsonProperty("updated_on")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
     private LocalDateTime updatedAt;
 
     @JsonProperty("closed_on")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
     private LocalDateTime closedAt;
 
     @JsonProperty("votes")
@@ -41,14 +45,12 @@ public class Issue {
     @JsonProperty("links")
     private IssueLinks links;
 
-    // Getters adicionales para mantener compatibilidad
     public String getDescription() {
         return content != null ? content.getRaw() : null;
     }
 
     public List<String> getLabels() {
-        // Bitbucket issues no tienen labels por defecto, pero puedes implementarlo si es necesario
-        return List.of();
+        return List.of(); // Bitbucket no incluye etiquetas por defecto
     }
 
     public String getWebUrl() {
