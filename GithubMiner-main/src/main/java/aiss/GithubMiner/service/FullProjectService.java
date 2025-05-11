@@ -123,7 +123,7 @@ public class FullProjectService {
     }
 
     public void postProject(FullProject project) {
-        String gitMinerUrl = "http://localhost:8081/gitminer/projects"; // Ajusta según tu GitMiner
+        String gitMinerUrl = "http://localhost:8080/gitminer/projects"; // Ajusta según tu GitMiner
         HttpHeaders headers = new HttpHeaders();
         try {
             ResponseEntity<Void> response = restTemplate.exchange(
