@@ -48,10 +48,12 @@ public class Commit {
 
     @Override
     public String toString() {
-        return "ListCommits{" +
-                "id='" + id + '\'' +
-                ", commit=" + commitContent +
-                ", web_url='" + web_url + '\'' +
-                '}';
+        return "ListCommits {" +
+                "\n  id: '" + id + "'," +
+                "\n  title: '" + getTitle() + "'," +
+                "\n  commit: " + commitContent + "," +
+                "\n  web_url: '" + web_url + "'" +
+                "\n}";
     }
+
 }

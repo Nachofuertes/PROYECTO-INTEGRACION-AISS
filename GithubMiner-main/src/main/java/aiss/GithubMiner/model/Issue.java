@@ -1,10 +1,10 @@
 
-package aiss.GithubMiner.model.issue;
+package aiss.GithubMiner.model;
 
-import aiss.GithubMiner.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -28,15 +28,8 @@ public class Issue {
     private String closedAt;
     @JsonProperty("labels")
     private List<String> labels;
-    @JsonProperty("reactions ")
+    @JsonProperty("reactions")
     private Reaction reactions;
-    @JsonProperty("user")
-    private User author;
-    @JsonProperty("assignee")
-    private User assignee; // Usuario asignado (si hay solo uno)
-
-    @JsonProperty("assignees")
-    private List<User> assignees; // Lista de usuarios asignados
 
     public static class Reaction {
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -53,14 +46,41 @@ public class Issue {
             this.votes = votes;
         }
 
+
+        @Override
+        public String toString() {
+            return "Reaction {" +
+                    "\n  votes: " + votes +
+                    "\n}";
+        }
+
     }
 
-    public List<User> getAssignees() {
-        return assignees;
+
+
+    @JsonProperty("user")
+    private User author;
+    @JsonProperty("assignee")
+    private User assignee; // Usuario asignado (si hay solo uno)
+
+    ///
+
+    //Este número pertenece a una issue y es el que me va a permitir sacar los comments de una issue
+    //Haciendo https://api.github.com/repos/torvalds/linux/issues/{numero}/comments
+
+    @JsonProperty("number")
+    private Integer number;
+
+    ///
+
+
+
+    public Integer getNumber() {
+        return number;
     }
 
-    public void setAssignees(List<User> assignees) {
-        this.assignees = assignees;
+    public void setNumber(Integer number) {
+        this.number = number;
     }
 
     public User getAssignee() {
@@ -153,19 +173,20 @@ public class Issue {
 
     @Override
     public String toString() {
-        return "Issue{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", state='" + state + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", closedAt='" + closedAt + '\'' +
-                ", labels=" + labels +
-                ", reactions=" + reactions +
-                ", author=" + author +
-                ", assignee=" + assignee +
-                ", assignees=" + assignees +
-                '}';
+        return "Issue {" +
+                "\n  id: '" + id + "'," +
+                "\n  title: '" + title + "'," +
+                "\n  description: '" + description + "'," +
+                "\n  state: '" + state + "'," +
+                "\n  createdAt: '" + createdAt + "'," +
+                "\n  updatedAt: '" + updatedAt + "'," +
+                "\n  closedAt: '" + closedAt + "'," +
+                "\n  labels: " + labels + "," +
+                "\n  reactions: " + reactions + "," +
+                "\n  author: " + author + "," +
+                "\n  assignee: " + assignee + "," +
+                "\n  number: " + number +
+                "\n}";
     }
+
 }

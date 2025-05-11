@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CommitContent {
     @JsonProperty("message")
     private String message;
-    @JsonProperty("Author")
+    @JsonProperty("author")
     private Author author;
 
     public Author getAuthor() {
@@ -30,9 +30,10 @@ public class CommitContent {
 
     @Override
     public String toString() {
-        return "Commit{" +
-                "message='" + message + '\'' +
-                ", author=" + author +
-                '}';
+        return "Commit {" +
+                "\n  message: '" + message + "'," +
+                "\n  author: " + author +
+                "\n}";
     }
+
 }

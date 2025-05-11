@@ -1,19 +1,21 @@
-package aiss.GithubMiner.model;
+package aiss.GithubMiner.modelDTO;
 
+import aiss.GithubMiner.model.IssueWithComment;
+import aiss.GithubMiner.model.Project;
 import aiss.GithubMiner.model.commit.Commit;
 
 import java.util.List;
 
-public class FullProject {
+public class FullProjectDTO {
 
     private Project project;
     private List<Commit> commits;
-    private List<IssueWithComment> issuesWithComment;
+    private List<IssueDTOWithComment> issues;
 
-    public FullProject(Project project, List<Commit> commits, List<IssueWithComment> issues) {
+    public FullProjectDTO(Project project, List<Commit> commits, List<IssueDTOWithComment> issues) {
         this.project = project;
         this.commits = commits;
-        this.issuesWithComment = issuesWithComment;
+        this.issues = issues;
     }
 
     public Project getProject() {
@@ -32,12 +34,12 @@ public class FullProject {
         this.commits = commits;
     }
 
-    public List<IssueWithComment> getIssues() {
-        return issuesWithComment;
+    public List<IssueDTOWithComment> getIssues() {
+        return issues;
     }
 
-    public void setIssues(List<IssueWithComment> issues) {
-        this.issuesWithComment = issues;
+    public void setIssues(List<IssueDTOWithComment> issues) {
+        this.issues = issues;
     }
 
 
@@ -48,7 +50,7 @@ public class FullProject {
         return "FullProject {" +
                 "\n  project: " + project + "," +
                 "\n  commits: " + commits + "," +
-                "\n  issues: " + issuesWithComment +
+                "\n  issues: " + issues +
                 "\n}";
     }
 
