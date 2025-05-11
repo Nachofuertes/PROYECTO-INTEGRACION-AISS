@@ -15,27 +15,27 @@ public class Author {
     private String author_date;
 
 
-
+    @JsonProperty("author_name")
     public String getAuthor_name() {
         return author_name;
     }
-
+    @JsonProperty("author_name")
     public void setAuthor_name(String author_name) {
         this.author_name = author_name;
     }
-
+    @JsonProperty("author_email")
     public String getAuthor_email() {
         return author_email;
     }
-
+    @JsonProperty("author_email")
     public void setAuthor_email(String author_email) {
         this.author_email = author_email;
     }
-
+    @JsonProperty("author_date")
     public String getAuthor_date() {
         return author_date;
     }
-
+    @JsonProperty("author_date")
     public void setAuthor_date(String author_date) {
         this.author_date = author_date;
     }
