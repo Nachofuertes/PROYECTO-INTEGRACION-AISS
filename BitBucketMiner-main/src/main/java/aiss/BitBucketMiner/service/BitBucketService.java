@@ -163,10 +163,10 @@ public class BitBucketService {
     // Configura headers con autenticación básica
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        //String auth = bitbucketUsername + ":" + bitbucketToken;
-        //String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-        //headers.set("Authorization", "Basic " + encodedAuth);
-        //headers.setContentType(MediaType.APPLICATION_JSON);
+        String auth = bitbucketUsername + ":" + bitbucketToken;
+        String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
+        headers.set("Authorization", "Basic " + encodedAuth);
+        headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
 }
