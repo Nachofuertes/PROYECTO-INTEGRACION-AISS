@@ -47,6 +47,13 @@ public class IssueDTO {
             this.votes = votes;
         }
 
+        @Override
+        public String toString() {
+            return "Reaction {" +
+                    "\n  votes: " + votes +
+                    "\n}";
+        }
+
     }
 
     @JsonProperty("user")

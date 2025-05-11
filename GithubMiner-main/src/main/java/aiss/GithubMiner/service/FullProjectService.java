@@ -2,6 +2,7 @@ package aiss.GithubMiner.service;
 
 import aiss.GithubMiner.model.*;
 import aiss.GithubMiner.model.commit.Commit;
+import aiss.GithubMiner.modelDTO.FullProjectDTO;
 import aiss.GithubMiner.modelDTO.IssueDTO;
 import aiss.GithubMiner.modelDTO.IssueDTOWithComment;
 import aiss.GithubMiner.transformer.IssueTransformer;
@@ -35,6 +36,17 @@ public class FullProjectService {
         //También lo podriamos haber hecho asi, pero no hubieramos podido utilizar el token
 
         // return restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo, Project.class);
+    }
+
+    public List<Commit> getCommits(String owner, String repo, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Commit[]> request = new HttpEntity<>(null,headers);
+        ResponseEntity<Commit[]> response = restTemplate.exchange("https://api.github.com/repos/" + owner + "/" + repo + "/commits", HttpMethod.GET, request, Commit[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+        //Commit[] commits = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/commits", Commit[].class);
+        //return Arrays.asList(commits);
     }
 
 
@@ -119,7 +131,7 @@ public class FullProjectService {
 
         for (Issue i : issues) { // Recorremos cada issue
 
-            // Transformamos la Issue en IssueDTO
+            // **Transformamos la Issue en IssueDTO**
             IssueDTO issueDTO = IssueTransformer.transform(i);
 
             // Le aportamos el nombre al autor de la issue
@@ -129,7 +141,8 @@ public class FullProjectService {
                     "https://api.github.com/users/" + nombreUsuario, HttpMethod.GET, request, User.class);
             User user = response.getBody();
             if (user != null) {
-                i.getAuthor().setName(user.getName());            }
+                issueDTO.setAuthor(user);
+            }
 
             // Le aportamos el nombre al usuario asignado (si existe)
             if (i.getAssignee() != null) {
@@ -143,7 +156,7 @@ public class FullProjectService {
                 }
             }
 
-            // 🟢 Obtenemos los comentarios de la Issue
+            // Obtenemos los comentarios de la Issue
             Integer numeroIssue = i.getNumber();
             HttpEntity<Comment[]> request3 = new HttpEntity<>(null, headers);
             ResponseEntity<Comment[]> response3 = restTemplate.exchange(
@@ -151,7 +164,7 @@ public class FullProjectService {
                     HttpMethod.GET, request3, Comment[].class);
             List<Comment> comments = Arrays.asList(Objects.requireNonNull(response3.getBody()));
 
-            // 🟢 Le asignamos el nombre a los autores de los comentarios
+            // Le asignamos el nombre a los autores de los comentarios
             for (Comment c : comments) {
                 String nombreUsuarioComment = c.getAuthor().getUsername();
                 HttpEntity<User> request4 = new HttpEntity<>(null, headers);
@@ -163,28 +176,24 @@ public class FullProjectService {
                 }
             }
 
-            // 🟢 Guardamos la Issue transformada con sus comentarios
-            res.add(new IssueDTOWithComment(issueDTO, comments));
+            // **Guardamos la Issue transformada con sus comentarios**
+        res.add(new IssueDTOWithComment(issueDTO, comments));
         }
 
         return res;
     }
 
 
-    public List<Commit> getCommits(String owner, String repo, String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<Commit[]> request = new HttpEntity<>(null,headers);
-        ResponseEntity<Commit[]> response = restTemplate.exchange("https://api.github.com/repos/" + owner + "/" + repo + "/commits", HttpMethod.GET, request, Commit[].class);
-        return Arrays.asList(Objects.requireNonNull(response.getBody()));
 
-        //Commit[] commits = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/commits", Commit[].class);
-        //return Arrays.asList(commits);
-    }
 
     public FullProject getFullProject(String owner, String repo, String token) {
 
         return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
+    }
+
+    public FullProjectDTO getFullProjectSiguiendoElModeloDeDatos(String owner, String repo, String token) {
+
+        return new FullProjectDTO(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompletaSiguiendoElModeloDeDatos(owner,repo,token));
     }
 
 }

@@ -13,6 +13,11 @@ public class IssueDTOWithComment {
     private IssueDTO issue;
     private List<Comment> comments;
 
+    public IssueDTOWithComment(IssueDTO issue, List<Comment> comments) {
+        this.issue = issue;
+        this.comments = comments;
+    }
+
     public IssueDTO getIssue() {
         return issue;
     }

@@ -32,6 +32,7 @@ public class IssueTransformer {
         IssueDTO.Reaction dtoReaction = new IssueDTO.Reaction();
         dtoReaction.setVotes(reaction.getVotes());
         return dtoReaction;
+    }
 
 
 }

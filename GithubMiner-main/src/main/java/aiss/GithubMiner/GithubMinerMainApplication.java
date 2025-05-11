@@ -13,7 +13,7 @@ public class GithubMinerMainApplication {
 		SpringApplication.run(GithubMinerMainApplication.class, args);
 	}
 
-	//hola
+
 	@Bean
 	public RestTemplate restTemplate(RestTemplateBuilder builder) { return builder.build(); }
 
