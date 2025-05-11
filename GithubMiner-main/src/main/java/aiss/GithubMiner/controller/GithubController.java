@@ -13,8 +13,8 @@ public class GithubController {
 
     @Autowired
     RestTemplate restTemplate;
-    @Autowired
-    FullProjectService fullProjectService;
+
+
 
     @GetMapping("/{owner}/{repo}")
 
