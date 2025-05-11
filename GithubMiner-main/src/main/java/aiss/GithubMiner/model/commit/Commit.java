@@ -7,20 +7,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-@JsonPropertyOrder({ "id", "title", "message", "author_name", "author_email", "author_date", "web_url" })
+@JsonPropertyOrder({ "id", "title", "message", "author_name", "author_email", "authored_date", "web_url" })
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+// value = {"commit", "sha "}
+@JsonIgnoreProperties(ignoreUnknown = true )
 
 public class Commit {
 
-
-    @JsonProperty("sha")
     private String id;
 
-    @JsonIgnore
     private CommitContent commitContent;
 
-    @JsonProperty("html_url")
     private String web_url;
 
     @JsonProperty("title")
@@ -43,23 +40,24 @@ public class Commit {
         return commitContent.getAuthor().getAuthor_email();
     }
 
-    @JsonProperty("author_date")
+    @JsonProperty("authored_date")
     public String getAuthor_date() {
         return commitContent.getAuthor().getAuthor_date();
     }
 
-
+    @JsonProperty("id")
     public String getId() {
         return id;
     }
+    @JsonProperty("sha")
     public void setId(String id) {
         this.id = id;
     }
-
+    @JsonIgnore
     public CommitContent getCommit() {
         return commitContent;
     }
-
+    @JsonProperty("commit")
     public void setCommit(CommitContent commitContent) {
         this.commitContent = commitContent;
     }
@@ -68,8 +66,7 @@ public class Commit {
     public String getWeb_url() {
         return web_url;
     }
-
-    @JsonProperty("web_url")
+    @JsonProperty("html_url")
     public void setWeb_url(String web_url) {
         this.web_url = web_url;
     }

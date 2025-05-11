@@ -3,10 +3,6 @@ package aiss.GithubMiner.service;
 import aiss.GithubMiner.model.*;
 import aiss.GithubMiner.model.commit.Commit;
 import aiss.GithubMiner.model.issue.Issue;
-import aiss.GithubMiner.modelDTO.FullProjectDTO;
-import aiss.GithubMiner.modelDTO.IssueDTO;
-import aiss.GithubMiner.modelDTO.IssueDTOWithComment;
-import aiss.GithubMiner.transformer.IssueTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -123,6 +119,13 @@ public class FullProjectService {
         return res;
     }
 
+    public FullProject getFullProject(String owner, String repo, String token) {
+
+        return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
+    }
+
+
+    /*
     public List<IssueDTOWithComment> getIssueCompletaSiguiendoElModeloDeDatos(String owner, String repo, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
@@ -185,17 +188,20 @@ public class FullProjectService {
     }
 
 
+     */
 
 
-    public FullProject getFullProject(String owner, String repo, String token) {
 
-        return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
-    }
+
+
+    /*
 
     public FullProjectDTO getFullProjectSiguiendoElModeloDeDatos(String owner, String repo, String token) {
 
         return new FullProjectDTO(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompletaSiguiendoElModeloDeDatos(owner,repo,token));
     }
+
+     */
 
 }
 

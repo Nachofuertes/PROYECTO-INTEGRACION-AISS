@@ -44,13 +44,15 @@ class FullProjectServiceTest {
         System.out.println(issue);
     }
 
-
+    /*
     @Test
     void getIssueCompletaSiguiendoElModeloDeDatos() {
         List<IssueDTOWithComment> e = fullProjectService.getIssueCompletaSiguiendoElModeloDeDatos("torvalds", "linux", "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");
         System.out.println(e);
 
     }
+
+     */
 
     @Test
     @DisplayName("GET FULL PROJECT")
@@ -61,6 +63,8 @@ class FullProjectServiceTest {
 
 
     }
+
+    /*
     @Test
     void getFullProjectConElModeloDeDatos() {
         getProject();
@@ -68,9 +72,13 @@ class FullProjectServiceTest {
         getIssueCompletaSiguiendoElModeloDeDatos();
     }
 
+
+
     @Test
     void getFullProjectSiguiendoElModeloDeDatos() {
         FullProjectDTO proyectoCompleto = fullProjectService.getFullProjectSiguiendoElModeloDeDatos("torvalds","linux","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");
         System.out.println(proyectoCompleto);
     }
+
+     */
 }

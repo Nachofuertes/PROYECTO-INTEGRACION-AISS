@@ -3,7 +3,9 @@ package aiss.GithubMiner.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+@JsonPropertyOrder({ "id", "name", "web_url"})
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Project {
@@ -15,14 +17,8 @@ public class Project {
     @JsonProperty("name")
     public String name;
 
-    @JsonProperty("html_url")
-    public String web_Url;
+    public String web_url;
 
-    public Project(String id, String name, String webUrl) {
-        this.id = id;
-        this.name = name;
-        this.web_Url = webUrl;
-    }
 
     public String getId() {
         return id;
@@ -40,12 +36,14 @@ public class Project {
         this.name = name;
     }
 
+    @JsonProperty("web_url")
     public String getWebUrl() {
-        return web_Url;
+        return web_url;
     }
 
+    @JsonProperty("html_url")
     public void setWebUrl(String webUrl) {
-        this.web_Url = webUrl;
+        this.web_url = webUrl;
     }
 
 
@@ -54,7 +52,7 @@ public class Project {
         return "Project {" +
                 "\n  id: '" + id + "'," +
                 "\n  name: '" + name + "'," +
-                "\n  webUrl: '" + web_Url + "'" +
+                "\n  webUrl: '" + web_url + "'" +
                 "\n}";
     }
 

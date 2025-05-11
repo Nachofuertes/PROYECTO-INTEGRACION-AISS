@@ -12,7 +12,6 @@ public class CommitContent {
     private String message;
 
     @JsonProperty("author")
-
     private Author author;
 
     public Author getAuthor() {
