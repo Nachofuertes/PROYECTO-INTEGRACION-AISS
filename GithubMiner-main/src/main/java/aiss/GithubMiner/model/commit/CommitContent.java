@@ -1,6 +1,7 @@
 
 package aiss.GithubMiner.model.commit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -9,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class CommitContent {
     @JsonProperty("message")
     private String message;
+
     @JsonProperty("author")
+
     private Author author;
 
     public Author getAuthor() {
