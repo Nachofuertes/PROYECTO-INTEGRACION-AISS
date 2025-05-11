@@ -1,7 +1,6 @@
 package aiss.BitBucketMiner.service;
 
 import aiss.BitBucketMiner.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -9,164 +8,123 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class BitBucketService {
 
-    private final RestTemplate restTemplate;
-
     @Value("${bitbucket.api.url}")
     private String bitbucketUrl;
 
-    @Value("${bitbucket.api.username}")
-    private String bitbucketUsername;
-
-    @Value("${bitbucket.api.token}")
-    private String bitbucketToken;
-
-    @Value("${bitbucket.api.default.ncommits}")
+    @Value("${bitbucket.api.default.ncommits:2}")
     private Integer defaultNCommits;
 
-    @Value("${bitbucket.api.default.nissues}")
+    @Value("${bitbucket.api.default.nissues:2}")
     private Integer defaultNIssues;
 
-    @Value("${bitbucket.api.default.maxpages}")
+    @Value("${bitbucket.api.default.maxpages:1}")
     private Integer defaultMaxPages;
 
-    @Autowired
+    private final RestTemplate restTemplate;
+
     public BitBucketService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
     }
 
-    // Obtiene datos de un repositorio (commits + issues)
-    public Project getProject(String workspace, String repoSlug, Integer nCommits, Integer nIssues, Integer maxPages) {
-        if (nCommits == null) nCommits = defaultNCommits;
-        if (nIssues == null) nIssues = defaultNIssues;
-        if (maxPages == null) maxPages = defaultMaxPages;
+    public Project fetchAndProcessRepository(String workspace, String repoSlug, Integer nCommits, Integer nIssues, Integer maxPages) {
+        // Validación de parámetros con valores por defecto
+        nCommits = Optional.ofNullable(nCommits).orElse(defaultNCommits);
+        nIssues = Optional.ofNullable(nIssues).orElse(defaultNIssues);
+        maxPages = Optional.ofNullable(maxPages).orElse(defaultMaxPages);
 
-        String repoUrl = String.format("%s/repositories/%s/%s", bitbucketUrl, workspace, repoSlug);
+        // Obtener proyecto base
+        Project project = fetchProject(workspace, repoSlug);
+
+        // Obtener commits e issues
+        project.setCommits(getCommits(workspace, repoSlug, nCommits, maxPages));
+        project.setIssues(getIssues(workspace, repoSlug, nIssues, maxPages));
+
+        return project;
+    }
+
+    private Project fetchProject(String workspace, String repoSlug) {
+        String url = buildUrl("/repositories/{workspace}/{repoSlug}", workspace, repoSlug);
 
         try {
-            ResponseEntity<Project> response = restTemplate.exchange(
-                    repoUrl,
-                    HttpMethod.GET,
-                    new HttpEntity<>(getHeaders()),
-                    Project.class
-            );
+            ResponseEntity<Project> response = restTemplate.getForEntity(url, Project.class);
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                Project project = response.getBody();
-                project.setCommits(getCommits(workspace, repoSlug, nCommits, maxPages));
-                project.setIssues(getIssues(workspace, repoSlug, nIssues, maxPages));
-                return project;
-            } else {
-                throw new RuntimeException("Error al obtener el proyecto. Código de estado: " + response.getStatusCode());
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+                throw new RuntimeException("Failed to fetch project: " + response.getStatusCode());
             }
+
+            return response.getBody();
         } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Error en la API de Bitbucket: " + e.getResponseBodyAsString());
+            throw new RuntimeException("Bitbucket API Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
     }
 
-    // Obtiene commits paginados
     private List<Commit> getCommits(String workspace, String repoSlug, Integer perPage, Integer maxPages) {
-        List<Commit> commits = new ArrayList<>();
-        String commitsUrl = String.format("%s/repositories/%s/%s/commits", bitbucketUrl, workspace, repoSlug);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(commitsUrl)
-                .queryParam("pagelen", perPage);
-
-        String nextUrl = builder.toUriString();
-        int pagesProcessed = 0;
-
-        while (nextUrl != null && pagesProcessed < maxPages) {
-            try {
-                ResponseEntity<BitBucketCommitResponse> response = restTemplate.exchange(
-                        nextUrl,
-                        HttpMethod.GET,
-                        new HttpEntity<>(getHeaders()),
-                        BitBucketCommitResponse.class
-                );
-
-                if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                    commits.addAll(response.getBody().getValues());
-                    nextUrl = response.getBody().getNext();
-                    pagesProcessed++;
-                } else {
-                    break;
-                }
-            } catch (HttpClientErrorException e) {
-                throw new RuntimeException("Error al obtener commits: " + e.getResponseBodyAsString());
-            }
-        }
-
-        return commits;
+        String url = buildUrl("/repositories/{workspace}/{repoSlug}/commits", workspace, repoSlug)
+                + "?pagelen=" + perPage;
+        return fetchPaginatedData(url, maxPages, Commit.class);
     }
 
-    // Obtiene issues paginados
     private List<Issue> getIssues(String workspace, String repoSlug, Integer perPage, Integer maxPages) {
-        List<Issue> issues = new ArrayList<>();
-        String issuesUrl = String.format("%s/repositories/%s/%s/issues", bitbucketUrl, workspace, repoSlug);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(issuesUrl)
-                .queryParam("pagelen", perPage);
-
-        String nextUrl = builder.toUriString();
-        int pagesProcessed = 0;
-
-        while (nextUrl != null && pagesProcessed < maxPages) {
-            try {
-                ResponseEntity<BitBucketIssueResponse> response = restTemplate.exchange(
-                        nextUrl,
-                        HttpMethod.GET,
-                        new HttpEntity<>(getHeaders()),
-                        BitBucketIssueResponse.class
-                );
-
-                if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                    issues.addAll(response.getBody().getValues());
-                    nextUrl = response.getBody().getNext();
-                    pagesProcessed++;
-                } else {
-                    break;
-                }
-            } catch (HttpClientErrorException e) {
-                throw new RuntimeException("Error al obtener issues: " + e.getResponseBodyAsString());
-            }
-        }
-
-        return issues;
+        String url = buildUrl("/repositories/{workspace}/{repoSlug}/issues", workspace, repoSlug)
+                + "?pagelen=" + perPage;
+        return fetchPaginatedData(url, maxPages, Issue.class);
     }
 
-    // Envía datos a GitMiner
+    private <T> List<T> fetchPaginatedData(String initialUrl, int maxPages, Class<T> type) {
+        List<T> results = new ArrayList<>();
+        String nextUrl = initialUrl;
+        int pagesFetched = 0;
+
+        while (nextUrl != null && pagesFetched < maxPages) {
+            try {
+                ResponseEntity<Map> response = restTemplate.getForEntity(nextUrl, Map.class);
+
+                if (response.getBody() != null) {
+                    List<Map<String, Object>> values = (List<Map<String, Object>>) response.getBody().get("values");
+                    if (values != null) {
+                        for (Map<String, Object> item : values) {
+                            String selfUrl = (String) ((Map<String, Object>) item.get("links")).get("self");
+                            T obj = restTemplate.getForObject(selfUrl, type);
+                            if (obj != null) results.add(obj);
+                        }
+                    }
+
+                    nextUrl = (String) response.getBody().get("next");
+                    pagesFetched++;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Error fetching paginated data: " + e.getMessage());
+            }
+        }
+        return results;
+    }
+
     public void postProject(Project project) {
-        String gitMinerUrl = "http://localhost:8081/gitminer/projects"; // Ajusta según tu GitMiner
+        String gitMinerUrl = "http://localhost:8081/gitminer/projects";
 
         try {
-            ResponseEntity<Void> response = restTemplate.exchange(
-                    gitMinerUrl,
-                    HttpMethod.POST,
-                    new HttpEntity<>(project, getHeaders()),
-                    Void.class
-            );
+            ResponseEntity<Void> response = restTemplate.postForEntity(gitMinerUrl, project, Void.class);
 
             if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new RuntimeException("Error al enviar datos a GitMiner. Código: " + response.getStatusCode());
+                throw new RuntimeException("GitMiner API Error: " + response.getStatusCode());
             }
         } catch (HttpClientErrorException e) {
-            throw new RuntimeException("Error en GitMiner: " + e.getResponseBodyAsString());
+            throw new RuntimeException("GitMiner API Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
     }
 
-    // Configura headers con autenticación básica
-    private HttpHeaders getHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        String auth = bitbucketUsername + ":" + bitbucketToken;
-        //String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-        //headers.set("Authorization", "Basic " + encodedAuth);
-        //headers.setContentType(MediaType.APPLICATION_JSON);
-        return headers;
+    private String buildUrl(String path, String workspace, String repoSlug) {
+        return UriComponentsBuilder.fromUriString(bitbucketUrl)
+                .path(path)
+                .buildAndExpand(Map.of(
+                        "workspace", workspace,
+                        "repoSlug", repoSlug
+                ))
+                .toUriString();
     }
 }
