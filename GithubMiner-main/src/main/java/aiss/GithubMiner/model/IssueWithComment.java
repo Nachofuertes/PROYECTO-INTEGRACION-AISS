@@ -1,5 +1,6 @@
 package aiss.GithubMiner.model;
 
+import aiss.GithubMiner.model.issue.Issue;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;

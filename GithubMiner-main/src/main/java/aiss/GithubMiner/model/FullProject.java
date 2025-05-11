@@ -8,12 +8,12 @@ public class FullProject {
 
     private Project project;
     private List<Commit> commits;
-    private List<IssueWithComment> issuesWithComment;
+    private List<IssueWithComment> issues;
 
     public FullProject(Project project, List<Commit> commits, List<IssueWithComment> issues) {
         this.project = project;
         this.commits = commits;
-        this.issuesWithComment = issuesWithComment;
+        this.issues = issues;
     }
 
     public Project getProject() {
@@ -33,11 +33,11 @@ public class FullProject {
     }
 
     public List<IssueWithComment> getIssues() {
-        return issuesWithComment;
+        return issues;
     }
 
     public void setIssues(List<IssueWithComment> issues) {
-        this.issuesWithComment = issues;
+        this.issues = issues;
     }
 
 
@@ -48,7 +48,7 @@ public class FullProject {
         return "FullProject {" +
                 "\n  project: " + project + "," +
                 "\n  commits: " + commits + "," +
-                "\n  issues: " + issuesWithComment +
+                "\n  issues: " + issues +
                 "\n}";
     }
 

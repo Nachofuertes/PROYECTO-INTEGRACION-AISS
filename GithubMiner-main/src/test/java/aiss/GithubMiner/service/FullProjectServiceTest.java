@@ -3,7 +3,7 @@ package aiss.GithubMiner.service;
 import aiss.GithubMiner.model.FullProject;
 import aiss.GithubMiner.model.IssueWithComment;
 import aiss.GithubMiner.model.Project;
-import aiss.GithubMiner.model.Issue;
+import aiss.GithubMiner.model.issue.Issue;
 import aiss.GithubMiner.model.commit.Commit;
 import aiss.GithubMiner.modelDTO.FullProjectDTO;
 import aiss.GithubMiner.modelDTO.IssueDTOWithComment;

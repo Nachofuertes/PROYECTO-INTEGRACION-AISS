@@ -2,9 +2,11 @@
 package aiss.GithubMiner.modelDTO;
 
 import aiss.GithubMiner.model.User;
+import aiss.GithubMiner.model.issue.Label;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -27,7 +29,7 @@ public class IssueDTO {
     @JsonProperty("closed_at")
     private String closedAt;
     @JsonProperty("labels")
-    private List<String> labels;
+    private List<Label> labels = new ArrayList<>();
     @JsonProperty("reactions")
 
     private Reaction reactions;
@@ -133,11 +135,11 @@ public class IssueDTO {
         this.closedAt = closedAt;
     }
 
-    public List<String> getLabels() {
+    public List<Label> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<String> labels) {
+    public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
 

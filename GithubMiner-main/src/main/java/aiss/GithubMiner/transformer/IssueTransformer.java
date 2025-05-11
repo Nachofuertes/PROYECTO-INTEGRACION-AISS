@@ -1,6 +1,6 @@
 package aiss.GithubMiner.transformer;
 
-import aiss.GithubMiner.model.Issue;
+import aiss.GithubMiner.model.issue.Issue;
 import aiss.GithubMiner.modelDTO.IssueDTO;
 
 public class IssueTransformer {

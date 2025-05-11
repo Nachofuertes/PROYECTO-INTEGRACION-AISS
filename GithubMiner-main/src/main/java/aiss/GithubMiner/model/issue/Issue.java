@@ -1,6 +1,7 @@
 
-package aiss.GithubMiner.model;
+package aiss.GithubMiner.model.issue;
 
+import aiss.GithubMiner.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -27,7 +28,7 @@ public class Issue {
     @JsonProperty("closed_at")
     private String closedAt;
     @JsonProperty("labels")
-    private List<String> labels;
+    private List<Label> labels = new ArrayList<Label>();
     @JsonProperty("reactions")
     private Reaction reactions;
 
@@ -155,11 +156,11 @@ public class Issue {
         this.closedAt = closedAt;
     }
 
-    public List<String> getLabels() {
+    public List<Label> getLabels() {
         return labels;
     }
 
-    public void setLabels(List<String> labels) {
+    public void setLabels(List<Label> labels) {
         this.labels = labels;
     }
 
