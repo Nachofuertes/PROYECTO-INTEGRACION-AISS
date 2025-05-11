@@ -5,8 +5,6 @@ import aiss.GithubMiner.model.IssueWithComment;
 import aiss.GithubMiner.model.Project;
 import aiss.GithubMiner.model.issue.Issue;
 import aiss.GithubMiner.model.commit.Commit;
-import aiss.GithubMiner.modelDTO.FullProjectDTO;
-import aiss.GithubMiner.modelDTO.IssueDTOWithComment;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

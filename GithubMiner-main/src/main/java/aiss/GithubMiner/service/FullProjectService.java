@@ -4,10 +4,7 @@ import aiss.GithubMiner.model.*;
 import aiss.GithubMiner.model.commit.Commit;
 import aiss.GithubMiner.model.issue.Issue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -123,6 +120,20 @@ public class FullProjectService {
 
         return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
     }
+
+    public FullProject createProject(String owner, String repo, String token,  FullProject fullProject) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        HttpEntity<FullProject> request = new HttpEntity<>(fullProject, headers);
+
+        ResponseEntity<FullProject> response = restTemplate.exchange(
+                "https://api.github.com/repos/" + owner + "/" + repo,
+                HttpMethod.POST, request, FullProject.class);
+
+        return response.getBody();
+    }
+
 
 
     /*
