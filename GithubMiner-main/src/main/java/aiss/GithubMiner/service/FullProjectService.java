@@ -6,6 +6,7 @@ import aiss.GithubMiner.model.issue.Issue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -121,98 +122,27 @@ public class FullProjectService {
         return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
     }
 
-    public FullProject createProject(String owner, String repo, String token,  FullProject fullProject) {
+    public void postProject(FullProject project) {
+        String gitMinerUrl = "http://localhost:8081/gitminer/projects"; // Ajusta según tu GitMiner
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
+        try {
+            ResponseEntity<Void> response = restTemplate.exchange(
+                    gitMinerUrl,
+                    HttpMethod.POST,
+                    new HttpEntity<>(project, headers),
+                    Void.class
+            );
 
-        HttpEntity<FullProject> request = new HttpEntity<>(fullProject, headers);
-
-        ResponseEntity<FullProject> response = restTemplate.exchange(
-                "https://api.github.com/repos/" + owner + "/" + repo,
-                HttpMethod.POST, request, FullProject.class);
-
-        return response.getBody();
-    }
-
-
-
-    /*
-    public List<IssueDTOWithComment> getIssueCompletaSiguiendoElModeloDeDatos(String owner, String repo, String token) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-
-        List<Issue> issues = getIssues(owner, repo, token);
-        List<IssueDTOWithComment> res = new ArrayList<>();
-
-        for (Issue i : issues) { // Recorremos cada issue
-
-            // **Transformamos la Issue en IssueDTO**
-            IssueDTO issueDTO = IssueTransformer.transform(i);
-
-            // Le aportamos el nombre al autor de la issue
-            String nombreUsuario = i.getAuthor().getUsername();
-            HttpEntity<User> request = new HttpEntity<>(null, headers);
-            ResponseEntity<User> response = restTemplate.exchange(
-                    "https://api.github.com/users/" + nombreUsuario, HttpMethod.GET, request, User.class);
-            User user = response.getBody();
-            if (user != null) {
-                issueDTO.setAuthor(user);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new RuntimeException("Error al enviar datos a GitMiner. Código: " + response.getStatusCode());
             }
-
-            // Le aportamos el nombre al usuario asignado (si existe)
-            if (i.getAssignee() != null) {
-                String nombreUsuarioAsignado = i.getAssignee().getUsername();
-                HttpEntity<User> request2 = new HttpEntity<>(null, headers);
-                ResponseEntity<User> response2 = restTemplate.exchange(
-                        "https://api.github.com/users/" + nombreUsuarioAsignado, HttpMethod.GET, request2, User.class);
-                User userAsignee = response2.getBody();
-                if (userAsignee != null) {
-                    issueDTO.setAssignee(userAsignee);
-                }
-            }
-
-            // Obtenemos los comentarios de la Issue
-            Integer numeroIssue = i.getNumber();
-            HttpEntity<Comment[]> request3 = new HttpEntity<>(null, headers);
-            ResponseEntity<Comment[]> response3 = restTemplate.exchange(
-                    "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + numeroIssue + "/comments",
-                    HttpMethod.GET, request3, Comment[].class);
-            List<Comment> comments = Arrays.asList(Objects.requireNonNull(response3.getBody()));
-
-            // Le asignamos el nombre a los autores de los comentarios
-            for (Comment c : comments) {
-                String nombreUsuarioComment = c.getAuthor().getUsername();
-                HttpEntity<User> request4 = new HttpEntity<>(null, headers);
-                ResponseEntity<User> response4 = restTemplate.exchange(
-                        "https://api.github.com/users/" + nombreUsuarioComment, HttpMethod.GET, request4, User.class);
-                User userComment = response4.getBody();
-                if (userComment != null) {
-                    c.getAuthor().setName(userComment.getName());
-                }
-            }
-
-            // **Guardamos la Issue transformada con sus comentarios**
-        res.add(new IssueDTOWithComment(issueDTO, comments));
+        } catch (HttpClientErrorException e) {
+            throw new RuntimeException("Error en GitMiner: " + e.getResponseBodyAsString());
         }
-
-        return res;
     }
 
 
-     */
 
-
-
-
-
-    /*
-
-    public FullProjectDTO getFullProjectSiguiendoElModeloDeDatos(String owner, String repo, String token) {
-
-        return new FullProjectDTO(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompletaSiguiendoElModeloDeDatos(owner,repo,token));
-    }
-
-     */
 
 }
 

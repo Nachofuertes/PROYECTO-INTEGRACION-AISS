@@ -26,4 +26,17 @@ public class FullProjectController {
 
         return ResponseEntity.ok(project);
     }
+
+    @PostMapping("/owner}/{repo}")
+    public ResponseEntity<FullProject> createRepo(
+            @PathVariable String owner,
+            @PathVariable String repo,
+            @RequestHeader("Authorization") String authorizationHeader) {
+        // Extraemos solo el token (sin "Bearer ")
+        String token = authorizationHeader.replace("Bearer ", "").trim();
+
+        FullProject project =  fullProjectService.getFullProject(owner, repo, token);
+        fullProjectService.postProject(project);
+        return ResponseEntity.ok(project);
+    }
 }
