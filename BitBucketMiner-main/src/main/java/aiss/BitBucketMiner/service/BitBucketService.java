@@ -142,7 +142,7 @@ public class BitBucketService {
 
     // Envía datos a GitMiner
     public void postProject(Project project) {
-        String gitMinerUrl = "http://localhost:8081/api/projects"; // Ajusta según tu GitMiner
+        String gitMinerUrl = "http://localhost:8081/gitminer/projects"; // Ajusta según tu GitMiner
 
         try {
             ResponseEntity<Void> response = restTemplate.exchange(
@@ -163,7 +163,7 @@ public class BitBucketService {
     // Configura headers con autenticación básica
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
-        //String auth = bitbucketUsername + ":" + bitbucketToken;
+        String auth = bitbucketUsername + ":" + bitbucketToken;
         //String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
         //headers.set("Authorization", "Basic " + encodedAuth);
         //headers.setContentType(MediaType.APPLICATION_JSON);
