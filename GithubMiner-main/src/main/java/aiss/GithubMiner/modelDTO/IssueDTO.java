@@ -1,5 +1,5 @@
 
-package aiss.GithubMiner.model.issue;
+package aiss.GithubMiner.modelDTO;
 
 import aiss.GithubMiner.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 
-public class Issue {
+public class IssueDTO {
 
     @JsonProperty("id")
     private String id;
@@ -28,15 +28,9 @@ public class Issue {
     private String closedAt;
     @JsonProperty("labels")
     private List<String> labels;
-    @JsonProperty("reactions ")
-    private Reaction reactions;
-    @JsonProperty("user")
-    private User author;
-    @JsonProperty("assignee")
-    private User assignee; // Usuario asignado (si hay solo uno)
+    @JsonProperty("reactions")
 
-    @JsonProperty("assignees")
-    private List<User> assignees; // Lista de usuarios asignados
+    private Reaction reactions;
 
     public static class Reaction {
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -55,13 +49,10 @@ public class Issue {
 
     }
 
-    public List<User> getAssignees() {
-        return assignees;
-    }
-
-    public void setAssignees(List<User> assignees) {
-        this.assignees = assignees;
-    }
+    @JsonProperty("user")
+    private User author;
+    @JsonProperty("assignee")
+    private User assignee; // Usuario asignado (si hay solo uno)
 
     public User getAssignee() {
         return assignee;
@@ -153,19 +144,19 @@ public class Issue {
 
     @Override
     public String toString() {
-        return "Issue{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", state='" + state + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", closedAt='" + closedAt + '\'' +
-                ", labels=" + labels +
-                ", reactions=" + reactions +
-                ", author=" + author +
-                ", assignee=" + assignee +
-                ", assignees=" + assignees +
-                '}';
+        return "Issue {" +
+                "\n  id: '" + id + "'," +
+                "\n  title: '" + title + "'," +
+                "\n  description: '" + description + "'," +
+                "\n  state: '" + state + "'," +
+                "\n  createdAt: '" + createdAt + "'," +
+                "\n  updatedAt: '" + updatedAt + "'," +
+                "\n  closedAt: '" + closedAt + "'," +
+                "\n  labels: " + labels + "," +
+                "\n  reactions: " + reactions + "," +
+                "\n  author: " + author + "," +
+                "\n  assignee: " + assignee + "," +
+                "\n}";
     }
+
 }

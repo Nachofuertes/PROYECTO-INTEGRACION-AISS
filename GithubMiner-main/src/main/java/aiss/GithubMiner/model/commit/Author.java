@@ -42,10 +42,11 @@ public class Author {
 
     @Override
     public String toString() {
-        return "Author{" +
-                "author_name='" + author_name + '\'' +
-                ", author_email='" + author_email + '\'' +
-                ", author_date='" + author_date + '\'' +
-                '}';
+        return "Author {" +
+                "\n  author_name: '" + author_name + "'," +
+                "\n  author_email: '" + author_email + "'," +
+                "\n  author_date: '" + author_date + "'" +
+                "\n}";
     }
+
 }

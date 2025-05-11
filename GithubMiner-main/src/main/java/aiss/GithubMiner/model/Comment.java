@@ -17,6 +17,16 @@ public class Comment {
     private String createdAt;
     @JsonProperty("updated_at")
     private String updatedAt;
+    @JsonProperty("user")
+    private User author;
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
 
     public String getId() {
         return id;
@@ -52,11 +62,13 @@ public class Comment {
 
     @Override
     public String toString() {
-        return "Comment{" +
-                "id='" + id + '\'' +
-                ", body='" + body + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                '}';
+        return "Comment {" +
+                "\n  id: '" + id + "'," +
+                "\n  body: '" + body + "'," +
+                "\n  createdAt: '" + createdAt + "'," +
+                "\n  updatedAt: '" + updatedAt + "'," +
+                "\n  author: " + author +
+                "\n}";
     }
+
 }

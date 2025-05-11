@@ -1,7 +1,6 @@
 package aiss.GithubMiner.model;
 
 import aiss.GithubMiner.model.commit.Commit;
-import aiss.GithubMiner.model.issue.Issue;
 
 import java.util.List;
 
@@ -9,16 +8,12 @@ public class FullProject {
 
     private Project project;
     private List<Commit> commits;
-    private List<Issue> issues;
-    private List<Comment> comments;
-    private User users;
+    private List<IssueWithComment> issuesWithComment;
 
-    public FullProject(Project project, List<Commit> commits, List<Issue> issues, List<Comment> comments, User users) {
+    public FullProject(Project project, List<Commit> commits, List<IssueWithComment> issues) {
         this.project = project;
         this.commits = commits;
-        this.issues = issues;
-        this.comments = comments;
-        this.users = users;
+        this.issuesWithComment = issuesWithComment;
     }
 
     public Project getProject() {
@@ -37,38 +32,24 @@ public class FullProject {
         this.commits = commits;
     }
 
-    public List<Issue> getIssues() {
-        return issues;
+    public List<IssueWithComment> getIssues() {
+        return issuesWithComment;
     }
 
-    public void setIssues(List<Issue> issues) {
-        this.issues = issues;
+    public void setIssues(List<IssueWithComment> issues) {
+        this.issuesWithComment = issues;
     }
 
-    public List<Comment> getComments() {
-        return comments;
-    }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
 
-    public User getUsers() {
-        return users;
-    }
-
-    public void setUsers(User users) {
-        this.users = users;
-    }
 
     @Override
     public String toString() {
-        return "FullProject{" +
-                "project=" + project +
-                ", commits=" + commits +
-                ", issues=" + issues +
-                ", comments=" + comments +
-                ", users=" + users +
-                '}';
+        return "FullProject {" +
+                "\n  project: " + project + "," +
+                "\n  commits: " + commits + "," +
+                "\n  issues: " + issuesWithComment +
+                "\n}";
     }
+
 }

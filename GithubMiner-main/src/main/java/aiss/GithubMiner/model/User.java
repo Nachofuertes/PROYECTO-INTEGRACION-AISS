@@ -12,7 +12,7 @@ public class User {
     @JsonProperty("login")
     private String username;
     @JsonProperty("name")
-    private String name;
+    private String name = "anonymous";
     @JsonProperty("avatar_url")
     private String avatarUrl;
     @JsonProperty("html_url")
@@ -62,12 +62,13 @@ public class User {
 
     @Override
     public String toString() {
-        return "User{" +
-                "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", name='" + name + '\'' +
-                ", avatarUrl='" + avatarUrl + '\'' +
-                ", webUrl='" + webUrl + '\'' +
-                '}';
+        return "User {" +
+                "\n  id: '" + id + "'," +
+                "\n  username: '" + username + "'," +
+                "\n  name: '" + name + "'," +
+                "\n  avatarUrl: '" + avatarUrl + "'," +
+                "\n  webUrl: '" + webUrl + "'" +
+                "\n}";
     }
+
 }

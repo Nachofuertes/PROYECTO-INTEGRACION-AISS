@@ -51,10 +51,11 @@ public class Project {
 
     @Override
     public String toString() {
-        return "Project{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", webUrl='" + web_Url + '\'' +
-                '}';
+        return "Project {" +
+                "\n  id: '" + id + "'," +
+                "\n  name: '" + name + "'," +
+                "\n  webUrl: '" + web_Url + "'" +
+                "\n}";
     }
+
 }

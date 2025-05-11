@@ -1,17 +1,22 @@
 package aiss.GithubMiner.service;
 
-import aiss.GithubMiner.model.FullProject;
-import aiss.GithubMiner.model.Comment;
-import aiss.GithubMiner.model.Project;
-import aiss.GithubMiner.model.User;
+import aiss.GithubMiner.model.*;
 import aiss.GithubMiner.model.commit.Commit;
-import aiss.GithubMiner.model.issue.Issue;
+import aiss.GithubMiner.modelDTO.IssueDTO;
+import aiss.GithubMiner.modelDTO.IssueDTOWithComment;
+import aiss.GithubMiner.transformer.IssueTransformer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FullProjectService {
@@ -19,58 +24,169 @@ public class FullProjectService {
     @Autowired
     RestTemplate restTemplate;
 
-    public FullProjectService getFullProjectData(String owner, String repo) {
+    public Project getProject(String owner, String repo, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Project> request = new HttpEntity<>(null,headers);
 
-        Project project = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo, Project.class);
-        Commit[] commits = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/commits", Commit[].class);
-        Issue[] issues = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/issues", Issue[].class);
-        Comment[] comments = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/comments", Comment[].class);
-        User user = restTemplate.getForObject("https://api.github.com/users/" + "Nachofuertes", User.class);
+        ResponseEntity<Project> response = restTemplate.exchange("https://api.github.com/repos/" + owner + "/" + repo, HttpMethod.GET, request, Project.class);
+        return response.getBody();
 
-        FullProject nuevoProyecto = new FullProject(project, List.of(commits), List.of(issues), List.of(comments), user);
+        //También lo podriamos haber hecho asi, pero no hubieramos podido utilizar el token
+
+        // return restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo, Project.class);
     }
 
-    public Project getProject(String owner, String repo) {
-        return restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo, Project.class);
+
+    public List<Issue> getIssues(String owner, String repo, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Issue[]> request = new HttpEntity<>(null,headers);
+
+        ResponseEntity<Issue[]> response = restTemplate.exchange("https://api.github.com/repos/" + owner + "/" + repo + "/issues", HttpMethod.GET, request, Issue[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+
+        //Issue[] issues = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/issues", Issue[].class);
+        //return issues != null ? Arrays.asList(issues) : new ArrayList<>();
     }
 
 
-    public Issue[] getIssues(String owner, String repo) {
-        return restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/issues", Issue[].class);
-    }
-    //hola
 
-    public List<Issue> getIssueCompleta(String owner, String repo) {
 
-        List<Issue> issues = Arrays.asList(getIssues(owner, repo)); // Obtiene las issues
-        for (Issue issue : issues) {
-            String nombreUsuario = issue.getAuthor().getUsername();
-            User user = restTemplate.getForObject("https://api.github.com/users/" + nombreUsuario, User.class);
-            if (user != null) {
-                issue.getAuthor().setName(user.getName());
+    public List<IssueWithComment> getIssueCompleta(String owner, String repo, String token) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + token);
+
+            List<Issue> issues = getIssues(owner, repo, token);
+            List<IssueWithComment> res = new ArrayList<>();
+            for (Issue i : issues) { //recorremos cada issue
+
+                //Le aportamos el nombre a cada autor de cada issue
+
+                String nombreUsuario = i.getAuthor().getUsername();
+
+                HttpEntity<User> request = new HttpEntity<>(null,headers);
+                ResponseEntity<User> response = restTemplate.exchange("https://api.github.com/users/" + nombreUsuario, HttpMethod.GET, request, User.class);
+                User user = response.getBody();
+                if (user != null) {
+                    i.getAuthor().setName(user.getName());
+                }
+
+                //Le aportamos el nombre a cada usuario asignado
+
+                if (i.getAssignee() != null) {
+                    String nombreUsuarioAsignado = i.getAssignee().getUsername();
+                    HttpEntity<User> request2 = new HttpEntity<>(null,headers);
+                    ResponseEntity<User> response2 = restTemplate.exchange("https://api.github.com/users/" + nombreUsuarioAsignado, HttpMethod.GET, request2, User.class);
+                    User userAsignee = response2.getBody();
+
+                    if (userAsignee != null) {
+                        i.getAssignee().setName(userAsignee.getName());
+                    }
+                }
+
+                //Le metemos a cada issue sus respectivos comments
+
+                Integer numeroIssue = i.getNumber();
+                HttpEntity<Comment[]> request3 = new HttpEntity<>(null,headers);
+                ResponseEntity<Comment[]> response3 = restTemplate.exchange("https://api.github.com/repos/"+ owner + "/" + repo + "/issues/"+ numeroIssue +"/comments", HttpMethod.GET, request3, Comment[].class);
+                List<Comment> comments = Arrays.asList(Objects.requireNonNull(response3.getBody()));
+                //Le metemos a cada autor de un comentario su respectivo nombre
+
+                for (Comment c : comments) {
+                    String nombreUsuarioComment = c.getAuthor().getUsername();
+                    HttpEntity<User> request4 = new HttpEntity<>(null,headers);
+                    ResponseEntity<User> response4 = restTemplate.exchange("https://api.github.com/users/" + nombreUsuarioComment, HttpMethod.GET, request4, User.class);
+                    User userComment  = response4.getBody();
+                    if (userComment != null) {
+                        c.getAuthor().setName(userComment.getName());
+                    }
+                }
+                res.add(new IssueWithComment(i, comments));
+
             }
 
+        return res;
+    }
+
+    public List<IssueDTOWithComment> getIssueCompletaSiguiendoElModeloDeDatos(String owner, String repo, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+
+        List<Issue> issues = getIssues(owner, repo, token);
+        List<IssueDTOWithComment> res = new ArrayList<>();
+
+        for (Issue i : issues) { // Recorremos cada issue
+
+            // Transformamos la Issue en IssueDTO
+            IssueDTO issueDTO = IssueTransformer.transform(i);
+
+            // Le aportamos el nombre al autor de la issue
+            String nombreUsuario = i.getAuthor().getUsername();
+            HttpEntity<User> request = new HttpEntity<>(null, headers);
+            ResponseEntity<User> response = restTemplate.exchange(
+                    "https://api.github.com/users/" + nombreUsuario, HttpMethod.GET, request, User.class);
+            User user = response.getBody();
+            if (user != null) {
+                i.getAuthor().setName(user.getName());            }
+
+            // Le aportamos el nombre al usuario asignado (si existe)
+            if (i.getAssignee() != null) {
+                String nombreUsuarioAsignado = i.getAssignee().getUsername();
+                HttpEntity<User> request2 = new HttpEntity<>(null, headers);
+                ResponseEntity<User> response2 = restTemplate.exchange(
+                        "https://api.github.com/users/" + nombreUsuarioAsignado, HttpMethod.GET, request2, User.class);
+                User userAsignee = response2.getBody();
+                if (userAsignee != null) {
+                    issueDTO.setAssignee(userAsignee);
+                }
+            }
+
+            // 🟢 Obtenemos los comentarios de la Issue
+            Integer numeroIssue = i.getNumber();
+            HttpEntity<Comment[]> request3 = new HttpEntity<>(null, headers);
+            ResponseEntity<Comment[]> response3 = restTemplate.exchange(
+                    "https://api.github.com/repos/" + owner + "/" + repo + "/issues/" + numeroIssue + "/comments",
+                    HttpMethod.GET, request3, Comment[].class);
+            List<Comment> comments = Arrays.asList(Objects.requireNonNull(response3.getBody()));
+
+            // 🟢 Le asignamos el nombre a los autores de los comentarios
+            for (Comment c : comments) {
+                String nombreUsuarioComment = c.getAuthor().getUsername();
+                HttpEntity<User> request4 = new HttpEntity<>(null, headers);
+                ResponseEntity<User> response4 = restTemplate.exchange(
+                        "https://api.github.com/users/" + nombreUsuarioComment, HttpMethod.GET, request4, User.class);
+                User userComment = response4.getBody();
+                if (userComment != null) {
+                    c.getAuthor().setName(userComment.getName());
+                }
+            }
+
+            // 🟢 Guardamos la Issue transformada con sus comentarios
+            res.add(new IssueDTOWithComment(issueDTO, comments));
         }
-        return issues;
+
+        return res;
     }
 
-    public Commits
 
-    public List
+    public List<Commit> getCommits(String owner, String repo, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<Commit[]> request = new HttpEntity<>(null,headers);
+        ResponseEntity<Commit[]> response = restTemplate.exchange("https://api.github.com/repos/" + owner + "/" + repo + "/commits", HttpMethod.GET, request, Commit[].class);
+        return Arrays.asList(Objects.requireNonNull(response.getBody()));
 
+        //Commit[] commits = restTemplate.getForObject("https://api.github.com/repos/" + owner + "/" + repo + "/commits", Commit[].class);
+        //return Arrays.asList(commits);
+    }
 
+    public FullProject getFullProject(String owner, String repo, String token) {
 
-
-
-
+        return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
+    }
 
 }
 
 
-
-
-
-
-    }
-
-}
