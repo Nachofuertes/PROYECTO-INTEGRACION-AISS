@@ -35,12 +35,15 @@ public class Commit {
     }
 
     public String getAuthorName() {
-        return author != null ? author.getUser() != null ? author.getUser().getDisplayName() : author.getRaw() : null;
+        return author != null
+                ? (author.getUser() != null ? author.getUser().getName() : author.getRaw())
+                : null;
     }
 
     public String getAuthorEmail() {
-        return author != null ? author.getUser() != null ? author.getUser().getEmail() : null : null;
+        return null; // Bitbucket no expone el email directamente desde la API pública
     }
+
 }
 
 @Data

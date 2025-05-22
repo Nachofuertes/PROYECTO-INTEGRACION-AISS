@@ -1,6 +1,6 @@
 package aiss.BitBucketMiner.controller;
 
-import aiss.BitBucketMiner.model.Project;
+import aiss.BitBucketMiner.dto.ProjectDTO;
 import aiss.BitBucketMiner.service.BitBucketService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,14 +16,14 @@ public class BitBucketMinerController {
     }
 
     @GetMapping("/{workspace}/{repo_slug}")
-    public ResponseEntity<Project> getRepositoryData(
+    public ResponseEntity<ProjectDTO> getRepositoryData(
             @PathVariable String workspace,
             @PathVariable("repo_slug") String repoSlug,
-            @RequestParam(required = false, defaultValue = "${bitbucket.api.default.ncommits}") Integer nCommits,
-            @RequestParam(required = false, defaultValue = "${bitbucket.api.default.nissues}") Integer nIssues,
-            @RequestParam(required = false, defaultValue = "${bitbucket.api.default.maxpages}") Integer maxPages) {
+            @RequestParam(required = false) Integer nCommits,
+            @RequestParam(required = false) Integer nIssues,
+            @RequestParam(required = false) Integer maxPages) {
 
-        Project project = service.fetchAndProcessRepository(workspace, repoSlug, nCommits, nIssues, maxPages);
+        ProjectDTO project = service.fetchAndConvertToDTO(workspace, repoSlug, nCommits, nIssues, maxPages);
         return ResponseEntity.ok(project);
     }
 
@@ -31,11 +31,11 @@ public class BitBucketMinerController {
     public ResponseEntity<Void> postRepositoryData(
             @PathVariable String workspace,
             @PathVariable("repo_slug") String repoSlug,
-            @RequestParam(required = false, defaultValue = "${bitbucket.api.default.ncommits}") Integer nCommits,
-            @RequestParam(required = false, defaultValue = "${bitbucket.api.default.nissues}") Integer nIssues,
-            @RequestParam(required = false, defaultValue = "${bitbucket.api.default.maxpages}") Integer maxPages) {
+            @RequestParam(required = false) Integer nCommits,
+            @RequestParam(required = false) Integer nIssues,
+            @RequestParam(required = false) Integer maxPages) {
 
-        Project project = service.fetchAndProcessRepository(workspace, repoSlug, nCommits, nIssues, maxPages);
+        ProjectDTO project = service.fetchAndConvertToDTO(workspace, repoSlug, nCommits, nIssues, maxPages);
         service.postProject(project);
         return ResponseEntity.ok().build();
     }
