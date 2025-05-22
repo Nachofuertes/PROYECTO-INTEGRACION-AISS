@@ -1,31 +1,19 @@
 
-package aiss.gitminer.model;
+package aiss.GithubMiner.parse.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import javax.annotation.Generated;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+@JsonPropertyOrder({ "id", "username", "name", "avatar_url", "web_url"})
 
-@Entity
-@Table(name = "GMUser")     // Watch out: User is a reserved keyword in H2
-public class User {
+public class    UserDTO {
 
-    @Id
-    @JsonProperty("id")
+
     private String id;
-    @JsonProperty("username")
     private String username;
-    @JsonProperty("name")
     private String name;
-    @JsonProperty("avatar_url")
-    private String avatarUrl;
-    @JsonProperty("web_url")
-    private String webUrl;
+    private String avatar_url;
+    private String web_url;
 
     public String getId() {
         return id;
@@ -52,25 +40,25 @@ public class User {
     }
 
     public String getAvatarUrl() {
-        return avatarUrl;
+        return avatar_url;
     }
-
+    @JsonProperty("avatar_url")
     public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
+        this.avatar_url = avatarUrl;
     }
 
     public String getWebUrl() {
-        return webUrl;
+        return web_url;
     }
-
+    @JsonProperty("web_url")
     public void setWebUrl(String webUrl) {
-        this.webUrl = webUrl;
+        this.web_url = webUrl;
     }
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(User.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
+        sb.append(UserDTO.class.getName()).append('@').append(Integer.toHexString(System.identityHashCode(this))).append('[');
         sb.append("id");
         sb.append('=');
         sb.append(((this.id == null)?"<null>":this.id));
@@ -85,11 +73,11 @@ public class User {
         sb.append(',');
         sb.append("avatarUrl");
         sb.append('=');
-        sb.append(((this.avatarUrl == null)?"<null>":this.avatarUrl));
+        sb.append(((this.avatar_url == null)?"<null>":this.avatar_url));
         sb.append(',');
         sb.append("webUrl");
         sb.append('=');
-        sb.append(((this.webUrl == null)?"<null>":this.webUrl));
+        sb.append(((this.web_url == null)?"<null>":this.web_url));
         sb.append(',');
         if (sb.charAt((sb.length()- 1)) == ',') {
             sb.setCharAt((sb.length()- 1), ']');

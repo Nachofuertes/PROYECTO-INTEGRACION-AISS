@@ -17,6 +17,7 @@ public class Project {
     @JsonProperty("name")
     public String name;
 
+    @JsonProperty("html_url")
     public String web_url;
 
 
@@ -36,12 +37,10 @@ public class Project {
         this.name = name;
     }
 
-    @JsonProperty("web_url")
     public String getWebUrl() {
         return web_url;
     }
 
-    @JsonProperty("html_url")
     public void setWebUrl(String webUrl) {
         this.web_url = webUrl;
     }

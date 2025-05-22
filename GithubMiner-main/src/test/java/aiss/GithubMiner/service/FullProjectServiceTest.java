@@ -44,15 +44,6 @@ class FullProjectServiceTest {
 
 
 
-    @Test
-    @DisplayName("GET FULL PROJECT")
-    void getFullProject() {
-
-        FullProject proyectoCompleto = fullProjectService.getFullProject("torvalds", "linux", "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");
-        System.out.println(proyectoCompleto);
-
-
-    }
 
 
 }

@@ -1,6 +1,7 @@
 
 package aiss.GithubMiner.model;
 
+import aiss.GithubMiner.parse.model.UserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -18,13 +19,13 @@ public class Comment {
     @JsonProperty("updated_at")
     private String updatedAt;
     @JsonProperty("user")
-    private User author;
+    private UserDTO author;
 
-    public User getAuthor() {
+    public UserDTO getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(UserDTO author) {
         this.author = author;
     }
 

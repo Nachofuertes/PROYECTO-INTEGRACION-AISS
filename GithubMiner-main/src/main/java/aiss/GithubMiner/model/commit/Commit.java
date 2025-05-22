@@ -63,7 +63,7 @@ public class Commit {
     }
 
     @JsonProperty("web_url")
-    public String getWeb_url() {
+    public String getWeb_urlC() {
         return web_url;
     }
     @JsonProperty("html_url")

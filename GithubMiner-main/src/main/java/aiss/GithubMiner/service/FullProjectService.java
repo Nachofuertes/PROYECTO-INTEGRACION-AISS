@@ -3,6 +3,7 @@ package aiss.GithubMiner.service;
 import aiss.GithubMiner.model.*;
 import aiss.GithubMiner.model.commit.Commit;
 import aiss.GithubMiner.model.issue.Issue;
+import aiss.GithubMiner.parse.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -117,13 +118,92 @@ public class FullProjectService {
         return res;
     }
 
-    public FullProject getFullProject(String owner, String repo, String token) {
+    /*
+    public ProjectDTO getFullProject(String owner, String repo, String token) {
 
-        return new FullProject(getProject(owner,repo,token), getCommits(owner,repo,token), getIssueCompleta(owner,repo,token));
+        Project project = getProject(owner, repo, token);
+        List<Commit> commit = getCommits(owner, repo, token);
+        List<IssueWithComment> issue= getIssueCompleta(owner, repo, token);
+
+
+        return new ProjectDTO(project,commit,issue);
     }
 
-    public void postProject(FullProject project) {
-        String gitMinerUrl = "http://localhost:8080/gitminer/projects"; // Ajusta según tu GitMiner
+     */
+
+    public ProjectDTO getFullProject(String owner, String repo, String token) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        Project project = getProject(owner, repo, token);
+
+        projectDTO.setId(project.getId());
+        projectDTO.setName(project.getName());
+        projectDTO.setWebUrl(project.getWebUrl());
+
+        List<CommitDTO> commitDTO = new ArrayList<>();
+        List<Commit> commits = getCommits(owner, repo, token);
+
+        for (Commit c : commits) {
+            CommitDTO  commit = new CommitDTO();
+            commit.setId(c.getId());
+            commit.setTitle(c.getTitle());
+            commit.setMessage(c.getMessage());
+            commit.setAuthorName(c.getAuthor_name());
+            commit.setAuthorEmail(c.getAuthor_email());
+            commit.setAuthoredDate(c.getAuthor_date());
+            commit.setWebUrl(c.getWeb_urlC());
+            commitDTO.add(commit);
+
+        }
+
+        List<IssueDTO> issueDTO = new ArrayList<>();
+        List<IssueWithComment> issues = getIssueCompleta(owner, repo, token);
+
+        for(IssueWithComment c : issues){
+            IssueDTO issue = new IssueDTO();
+            List<CommentDTO> comments = new ArrayList<>();
+
+            issue.setId(c.getIssue().getId());
+            issue.setTitle(c.getIssue().getTitle());
+            issue.setDescription(c.getIssue().getDescription());
+            issue.setState(c.getIssue().getState());
+            issue.setCreatedAt(c.getIssue().getCreatedAt());
+            issue.setUpdatedAt(c.getIssue().getUpdatedAt());
+            issue.setClosedAt(c.getIssue().getClosedAt());
+            issue.setLabels(c.getIssue().getLabels());
+            issue.setVotes(c.getIssue().getVotes());
+            issue.setAuthor(c.getIssue().getAuthor());
+            issue.setAssignee(c.getIssue().getAssignee());
+
+            for (Comment comment : c.getComments()) {
+                CommentDTO commentDTO = new CommentDTO();
+                commentDTO.setId(comment.getId());
+                commentDTO.setBody(comment.getBody());
+                commentDTO.setCreatedAt(comment.getCreatedAt());
+                commentDTO.setUpdatedAt(comment.getUpdatedAt());
+                commentDTO.setAuthor(comment.getAuthor());
+                comments.add(commentDTO);
+            }
+            issue.setComments(comments);
+            issueDTO.add(issue);
+
+
+        }
+        projectDTO.setIssues(issueDTO);
+        projectDTO.setCommits(commitDTO);
+
+        return projectDTO;
+
+
+    }
+
+
+
+
+
+
+
+    public void postProject(ProjectDTO project) {
+        String gitMinerUrl = "http://localhost:8080/gitminer/projects";
         HttpHeaders headers = new HttpHeaders();
         try {
             ResponseEntity<Void> response = restTemplate.exchange(

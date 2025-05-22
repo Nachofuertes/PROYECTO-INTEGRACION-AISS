@@ -2,6 +2,7 @@
 package aiss.GithubMiner.model.issue;
 
 import aiss.GithubMiner.model.User;
+import aiss.GithubMiner.parse.model.UserDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,6 +23,7 @@ public class Issue {
     @JsonProperty("title")
     private String title;
 
+    @JsonProperty("body")
     private String description;
 
     @JsonProperty("state")
@@ -34,13 +36,15 @@ public class Issue {
     @JsonProperty("closed_at")
     private String closedAt;
     @JsonProperty("labels")
-    private List<Label> labels = new ArrayList<Label>();
+    private List<Label> labels;
 
+    @JsonProperty("reactions")
     private Reaction reactions;
 
     public static class Reaction {
         @JsonIgnoreProperties(ignoreUnknown = true)
 
+        @JsonProperty("total_count")
         private Integer votes;
 
         @JsonProperty("votes")
@@ -65,6 +69,7 @@ public class Issue {
     public Reaction getReactions() {
         return reactions;
     }
+
     @JsonProperty("total_count")
     public void setReactions(Reaction reactions) {
         this.reactions = reactions;
@@ -78,9 +83,9 @@ public class Issue {
 
 
     @JsonProperty("user")
-    private User author;
+    private UserDTO author;
     @JsonProperty("assignee")
-    private User assignee; // Usuario asignado (si hay solo uno)
+    private UserDTO assignee; // Usuario asignado (si hay solo uno)
 
 
     ///
@@ -104,19 +109,19 @@ public class Issue {
         this.number = number;
     }
 
-    public User getAssignee() {
+    public UserDTO getAssignee() {
         return assignee;
     }
 
-    public void setAssignee(User assignee) {
+    public void setAssignee(UserDTO assignee) {
         this.assignee = assignee;
     }
 
-    public User getAuthor() {
+    public UserDTO getAuthor() {
         return author;
     }
 
-    public void setAuthor(User author) {
+    public void setAuthor(UserDTO author) {
         this.author = author;
     }
 
@@ -181,17 +186,14 @@ public class Issue {
 
 
     public List<String> getLabels() {
-        return labels.stream()
-                .map(Label::getName)
-                .collect(Collectors.toList());
+        if (labels == null) return new ArrayList<>();
+        return labels.stream().map(Label::getName).collect(Collectors.toList());
     }
 
-    public void setLabels(List<Label> labels) {
-        labels.stream()
-                .map(Label::getName)
-                .collect(Collectors.toList());
 
-
+    @JsonIgnore
+    public void setLabels(List<Label> labelObjects) {
+        this.labels = labelObjects;
     }
     /*
     @JsonProperty("label")
