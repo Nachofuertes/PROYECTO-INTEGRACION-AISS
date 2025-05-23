@@ -1,5 +1,6 @@
 package aiss.BitBucketMiner.model;
 
+import aiss.BitBucketMiner.dto.UserDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,16 +20,13 @@ public class Issue {
     private Content content;
 
     @JsonProperty("created_on")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     @JsonProperty("updated_on")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
-    private LocalDateTime updatedAt;
+    private String updatedAt;
 
     @JsonProperty("closed_on")
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSSSSXXX")
-    private LocalDateTime closedAt;
+    private String closedAt;
 
     @JsonProperty("votes")
     private Integer votes;

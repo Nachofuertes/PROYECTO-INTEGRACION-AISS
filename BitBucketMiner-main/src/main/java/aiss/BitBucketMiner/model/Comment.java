@@ -1,22 +1,33 @@
-package aiss.BitBucketMiner.dto;
 
+package aiss.BitBucketMiner.model;
+
+import aiss.BitBucketMiner.dto.UserDTO;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
-import java.time.LocalDateTime;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Comment {
 
-@JsonPropertyOrder({ "id", "body", "author", "created_at", "updated_at" })
-public class CommentDTO {
 
+    @JsonProperty("id")
     private String id;
+    @JsonProperty("body")
     private String body;
-    private UserDTO author;
 
     @JsonProperty("created_at")
     private String createdAt;
-
     @JsonProperty("updated_at")
     private String updatedAt;
+    @JsonProperty("user")
+    private UserDTO author;
+
+    public UserDTO getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(UserDTO author) {
+        this.author = author;
+    }
 
     public String getId() {
         return id;
@@ -34,14 +45,6 @@ public class CommentDTO {
         this.body = body;
     }
 
-    public UserDTO getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(UserDTO author) {
-        this.author = author;
-    }
-
     public String getCreatedAt() {
         return createdAt;
     }
@@ -57,4 +60,16 @@ public class CommentDTO {
     public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    @Override
+    public String toString() {
+        return "Comment {" +
+                "\n  id: '" + id + "'," +
+                "\n  body: '" + body + "'," +
+                "\n  createdAt: '" + createdAt + "'," +
+                "\n  updatedAt: '" + updatedAt + "'," +
+                "\n  author: " + author +
+                "\n}";
+    }
+
 }

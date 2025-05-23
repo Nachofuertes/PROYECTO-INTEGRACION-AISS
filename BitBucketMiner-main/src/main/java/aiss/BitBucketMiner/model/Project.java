@@ -23,6 +23,7 @@ public class Project {
 
     private List<Commit> commits;
     private List<Issue> issues;
+    private List<IssueWithComment> issueWithComments;
 
     public String getWebUrl() {
         return links != null && links.getHtml() != null ? links.getHtml().getHref() : null;

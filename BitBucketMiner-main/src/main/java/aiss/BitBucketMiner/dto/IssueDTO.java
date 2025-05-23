@@ -15,13 +15,13 @@ public class IssueDTO {
     private String state;
 
     @JsonProperty("created_at")
-    private LocalDateTime createdAt;
+    private String createdAt;
 
     @JsonProperty("updated_at")
-    private LocalDateTime updatedAt;
+    private String updatedAt;
 
     @JsonProperty("closed_at")
-    private LocalDateTime closedAt;
+    private String closedAt;
 
     private List<String> labels;
     private UserDTO author;
@@ -61,27 +61,27 @@ public class IssueDTO {
         this.state = state;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(String createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(String updatedAt) {
         this.updatedAt = updatedAt;
     }
 
-    public LocalDateTime getClosedAt() {
+    public String getClosedAt() {
         return closedAt;
     }
 
-    public void setClosedAt(LocalDateTime closedAt) {
+    public void setClosedAt(String closedAt) {
         this.closedAt = closedAt;
     }
 
