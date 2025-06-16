@@ -22,8 +22,8 @@ public class GithubMinerMainApplication {
 	@Bean
 	public OpenAPI customOpenAPI() {
 		return new OpenAPI().info(new Info()
-				.title("Bitbucket Miner API")
+				.title("Github Miner API")
 				.version("1.0")
-				.description("Documentación para la API que extrae y adapta datos de Bitbucket"));
+				.description("GitHubMiner es el componente dedicado a la extracción de datos desde GitHub. Consume la API pública de GitHub para recopilar información relevante sobre la actividad del repositorio, asegurando la compatibilidad con la estructura común de GitMiner"));
 	}
 }

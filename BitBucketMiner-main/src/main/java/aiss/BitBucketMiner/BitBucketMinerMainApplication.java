@@ -18,6 +18,6 @@ public class BitBucketMinerMainApplication {
 		return new OpenAPI().info(new Info()
 				.title("Bitbucket Miner API")
 				.version("1.0")
-				.description("Documentación para la API que extrae y adapta datos de Bitbucket"));
+				.description("BitbucketMiner se encarga de extraer datos de repositorios alojados en Bitbucket. Utiliza la API REST de Bitbucket para recuperar información sobre commits, issues y pull requests, transformándola al formato estandarizado definido por GitMiner"));
 	}
 }

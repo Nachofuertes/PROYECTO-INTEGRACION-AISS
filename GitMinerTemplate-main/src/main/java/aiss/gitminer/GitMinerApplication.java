@@ -16,8 +16,8 @@ public class GitMinerApplication {
 	@Bean
 	public OpenAPI customOpenAPI() {
 		return new OpenAPI().info(new Info()
-				.title("Bitbucket Miner API")
+				.title("GitMiner API")
 				.version("1.0")
-				.description("Documentación para la API que extrae y adapta datos de Bitbucket"));
+				.description("GitMiner es el motor central del sistema de minería de datos de repositorios. Orquesta la extracción, transformación y almacenamiento de datos relacionados con issues, commits y pull requests desde distintas plataformas (Bitbucket, GitHub, etc.). Este componente actúa como intermediario entre los mineros específicos de cada proveedor y el sistema de almacenamiento o procesamiento posterior."));
 	}
 }
