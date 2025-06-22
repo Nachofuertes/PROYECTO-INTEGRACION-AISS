@@ -1,7 +1,7 @@
 
 package aiss.BitBucketMiner.model;
 
-import aiss.BitBucketMiner.dto.UserDTO;
+import aiss.BitBucketMiner.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -11,21 +11,21 @@ public class Comment {
 
     @JsonProperty("id")
     private String id;
-    @JsonProperty("body")
-    private String body;
+    @JsonProperty("content")
+    private Content content;
 
-    @JsonProperty("created_at")
+    @JsonProperty("created_on")
     private String createdAt;
-    @JsonProperty("updated_at")
+    @JsonProperty("updated_on")
     private String updatedAt;
     @JsonProperty("user")
-    private UserDTO author;
+    private User author;
 
-    public UserDTO getAuthor() {
+    public User getAuthor() {
         return author;
     }
 
-    public void setAuthor(UserDTO author) {
+    public void setAuthor(User author) {
         this.author = author;
     }
 
@@ -38,11 +38,12 @@ public class Comment {
     }
 
     public String getBody() {
-        return body;
+        return content != null ? content.getRaw() : null;
     }
 
     public void setBody(String body) {
-        this.body = body;
+        if (this.content == null) this.content = new Content();
+        this.content.setRaw(body);
     }
 
     public String getCreatedAt() {
@@ -65,7 +66,7 @@ public class Comment {
     public String toString() {
         return "Comment {" +
                 "\n  id: '" + id + "'," +
-                "\n  body: '" + body + "'," +
+                "\n  body: '" + getBody() + "'," +
                 "\n  createdAt: '" + createdAt + "'," +
                 "\n  updatedAt: '" + updatedAt + "'," +
                 "\n  author: " + author +
