@@ -26,6 +26,12 @@ public class BitBucketService {
     @Value("${bitbucket.api.default.maxpages:1}")
     private Integer defaultMaxPages;
 
+    @Value("${bitbucket.api.default.ncomments:2}")
+    private Integer defaultNComments;
+
+    @Value("${gitminer.api.url}")
+    private String gitMinerUrl;
+
     private final RestTemplate restTemplate;
 
     public BitBucketService(RestTemplate restTemplate) {
@@ -36,6 +42,9 @@ public class BitBucketService {
         nCommits = Optional.ofNullable(nCommits).orElse(defaultNCommits);
         nIssues = Optional.ofNullable(nIssues).orElse(defaultNIssues);
         maxPages = Optional.ofNullable(maxPages).orElse(defaultMaxPages);
+        if (maxPages <= 0) {
+            maxPages = Integer.MAX_VALUE; // fetch all pages if non-positive
+        }
 
         Project project = fetchProject(workspace, repoSlug);
         project.setCommits(getCommits(workspace, repoSlug, nCommits, maxPages));
@@ -46,7 +55,7 @@ public class BitBucketService {
 
     public ProjectDTO fetchAndConvertToDTO(String workspace, String repoSlug, Integer nCommits, Integer nIssues, Integer maxPages) {
         Project project = fetchAndProcessRepository(workspace, repoSlug, nCommits, nIssues, maxPages);
-        return mapToDTO(project);
+        return mapToDTO(project, workspace, repoSlug, maxPages);
     }
 
     private Project fetchProject(String workspace, String repoSlug) {
@@ -70,6 +79,24 @@ public class BitBucketService {
     private List<Issue> getIssues(String workspace, String repoSlug, Integer perPage, Integer maxPages) {
         String url = buildUrl("/repositories/{workspace}/{repoSlug}/issues", workspace, repoSlug) + "?pagelen=" + perPage;
         return fetchPaginatedData(url, maxPages, Issue.class);
+    }
+
+    private List<Comment> getComments(String workspace, String repoSlug, String issueId,
+                                      Integer perPage, Integer maxPages) {
+        String url = UriComponentsBuilder.fromUriString(bitbucketUrl)
+                .path("/repositories/{workspace}/{repoSlug}/issues/{issueId}/comments")
+                .buildAndExpand(
+                        Map.of("workspace", workspace,
+                               "repoSlug", repoSlug,
+                               "issueId", issueId))
+                .toUriString() + "?pagelen=" + perPage;
+
+        try {
+            return fetchPaginatedData(url, maxPages, Comment.class);
+        } catch (RuntimeException e) {
+            System.out.println("Error fetching comments for issue " + issueId + ": " + e.getMessage());
+            return java.util.Collections.emptyList();
+        }
     }
 
     private <T> List<T> fetchPaginatedData(String initialUrl, int maxPages, Class<T> type) {
@@ -104,13 +131,13 @@ public class BitBucketService {
         return results;
     }
 
-    public void postProject(ProjectDTO dto) {
-        String gitMinerUrl = "http://localhost:8080/gitminer/projects";
+    public ProjectDTO postProject(ProjectDTO dto) {
         try {
-            ResponseEntity<Void> response = restTemplate.postForEntity(gitMinerUrl, dto, Void.class);
-            if (!response.getStatusCode().is2xxSuccessful()) {
+            ResponseEntity<ProjectDTO> response = restTemplate.postForEntity(gitMinerUrl, dto, ProjectDTO.class);
+            if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
                 throw new RuntimeException("GitMiner API Error: " + response.getStatusCode());
             }
+            return response.getBody();
         } catch (HttpClientErrorException e) {
             throw new RuntimeException("GitMiner API Error: " + e.getStatusCode() + " - " + e.getResponseBodyAsString());
         }
@@ -123,7 +150,7 @@ public class BitBucketService {
                 .toUriString();
     }
 
-    public ProjectDTO mapToDTO(Project project) {
+    public ProjectDTO mapToDTO(Project project, String workspace, String repoSlug, Integer maxPages) {
         ProjectDTO dto = new ProjectDTO();
         dto.setId(project.getId());
         dto.setName(project.getName());
@@ -160,7 +187,20 @@ public class BitBucketService {
                 i.setLabels(issue.getLabels());
                 i.setAuthor(issue.getAuthor() != null ? mapUser(issue.getAuthor()) : null);
                 i.setAssignee(issue.getAssignee() != null ? mapUser(issue.getAssignee()) : null);
-                i.setComments(new ArrayList<>());
+
+                List<Comment> comments = getComments(workspace, repoSlug, issue.getId(),
+                        defaultNComments, maxPages);
+                List<CommentDTO> commentDTOs = new ArrayList<>();
+                for (Comment comment : comments) {
+                    CommentDTO cd = new CommentDTO();
+                    cd.setId(comment.getId());
+                    cd.setBody(comment.getBody());
+                    cd.setCreatedAt(comment.getCreatedAt());
+                    cd.setUpdatedAt(comment.getUpdatedAt());
+                    cd.setAuthor(mapUser(comment.getAuthor()));
+                    commentDTOs.add(cd);
+                }
+                i.setComments(commentDTOs);
                 issueDTOs.add(i);
             }
         }
