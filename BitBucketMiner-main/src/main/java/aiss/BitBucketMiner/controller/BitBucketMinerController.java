@@ -40,7 +40,7 @@ public class BitBucketMinerController {
             description = "Obtiene y guarda la información de un proyecto desde Bitbucket transformada al modelo GitMiner"
     )
     @PostMapping("/{workspace}/{repo_slug}")
-    public ResponseEntity<Void> postRepositoryData(
+    public ResponseEntity<ProjectDTO> postRepositoryData(
             @Parameter(description = "Nombre del workspace de Bitbucket") @PathVariable String workspace,
             @Parameter(description = "Slug del repositorio") @PathVariable("repo_slug") String repoSlug,
             @Parameter(description = "Número máximo de commits a obtener (opcional)") @RequestParam(required = false) Integer nCommits,
@@ -48,7 +48,7 @@ public class BitBucketMinerController {
             @Parameter(description = "Número máximo de páginas a procesar (opcional)") @RequestParam(required = false) Integer maxPages) {
 
         ProjectDTO project = service.fetchAndConvertToDTO(workspace, repoSlug, nCommits, nIssues, maxPages);
-        service.postProject(project);
-        return ResponseEntity.ok().build();
+        ProjectDTO saved = service.postProject(project);
+        return ResponseEntity.ok(saved);
     }
 }
