@@ -16,6 +16,16 @@ public class Issue {
     private String title;
     private String state;
 
+    // Label-related fields
+    @JsonProperty("kind")
+    private String kind;
+
+    @JsonProperty("priority")
+    private String priority;
+
+    @JsonProperty("component")
+    private String component;
+
     @JsonProperty("content")
     private Content content;
 
@@ -48,7 +58,11 @@ public class Issue {
     }
 
     public List<String> getLabels() {
-        return List.of(); // Bitbucket no incluye etiquetas por defecto
+        List<String> labels = new java.util.ArrayList<>();
+        if (kind != null && !kind.isBlank()) labels.add(kind);
+        if (priority != null && !priority.isBlank()) labels.add(priority);
+        if (component != null && !component.isBlank()) labels.add(component);
+        return labels;
     }
 
     public String getWebUrl() {
