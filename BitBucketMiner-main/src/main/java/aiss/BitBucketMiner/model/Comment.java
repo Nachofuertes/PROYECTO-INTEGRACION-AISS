@@ -4,6 +4,7 @@ package aiss.BitBucketMiner.model;
 import aiss.BitBucketMiner.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import aiss.BitBucketMiner.model.Content;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Comment {

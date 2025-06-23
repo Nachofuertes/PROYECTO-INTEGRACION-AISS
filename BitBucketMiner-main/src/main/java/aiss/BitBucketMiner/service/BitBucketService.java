@@ -49,6 +49,7 @@ public class BitBucketService {
         Project project = fetchProject(workspace, repoSlug);
         project.setCommits(getCommits(workspace, repoSlug, nCommits, maxPages));
         project.setIssues(getIssues(workspace, repoSlug, nIssues, maxPages));
+        System.out.println("Obtenidas issues: " + project.getIssues());
 
         return project;
     }
@@ -83,6 +84,12 @@ public class BitBucketService {
 
     private List<Comment> getComments(String workspace, String repoSlug, String issueId,
                                       Integer perPage, Integer maxPages) {
+        perPage = Optional.ofNullable(perPage).orElse(defaultNComments);
+        maxPages = Optional.ofNullable(maxPages).orElse(defaultMaxPages);
+        if (maxPages <= 0) {
+            maxPages = Integer.MAX_VALUE;
+        }
+
         String url = UriComponentsBuilder.fromUriString(bitbucketUrl)
                 .path("/repositories/{workspace}/{repoSlug}/issues/{issueId}/comments")
                 .buildAndExpand(
@@ -90,7 +97,7 @@ public class BitBucketService {
                                "repoSlug", repoSlug,
                                "issueId", issueId))
                 .toUriString() + "?pagelen=" + perPage;
-
+        System.out.println("Obtenidos comments de: " + url + "\n Max Pages: " + maxPages);
         try {
             return fetchPaginatedData(url, maxPages, Comment.class);
         } catch (RuntimeException e) {
@@ -114,6 +121,7 @@ public class BitBucketService {
                         for (Map<String, Object> item : values) {
                             try {
                                 String json = objectMapper.writeValueAsString(item);
+                                System.out.println("JSON del comentario:\n" + json);
                                 T obj = objectMapper.readValue(json, type);
                                 if (obj != null) results.add(obj);
                             } catch (Exception e) {
@@ -174,6 +182,7 @@ public class BitBucketService {
 
         List<IssueDTO> issueDTOs = new ArrayList<>();
         if (project.getIssues() != null) {
+            System.out.println("Número de issues obtenidas: " + project.getIssues().size());
             for (Issue issue : project.getIssues()) {
                 IssueDTO i = new IssueDTO();
                 i.setId(issue.getId());
@@ -194,10 +203,15 @@ public class BitBucketService {
                 for (Comment comment : comments) {
                     CommentDTO cd = new CommentDTO();
                     cd.setId(comment.getId());
-                    cd.setBody(comment.getBody());
+
+                    String body = comment.getBody();
+                    if (body == null || body.trim().isEmpty()) {
+                        body = "No message provided";  // Puedes cambiar este mensaje por el que prefieras
+                    }
+                    cd.setBody(body);
                     cd.setCreatedAt(comment.getCreatedAt());
                     cd.setUpdatedAt(comment.getUpdatedAt());
-                    cd.setAuthor(mapUser(comment.getAuthor()));
+                    cd.setAuthor(comment.getAuthor() != null ? mapUser(comment.getAuthor()) : getDefaultUser());
                     commentDTOs.add(cd);
                 }
                 i.setComments(commentDTOs);
@@ -219,4 +233,15 @@ public class BitBucketService {
         dto.setWebUrl(user.getWebUrl());
         return dto;
     }
+
+    private UserDTO getDefaultUser() {
+        UserDTO defaultUser = new UserDTO();
+        defaultUser.setId("0");
+        defaultUser.setUsername("unknown");
+        defaultUser.setName("Unknown User");
+        defaultUser.setAvatarUrl(null);
+        defaultUser.setWebUrl(null);
+        return defaultUser;
+    }
+
 }

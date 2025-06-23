@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import aiss.BitBucketMiner.model.Content;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +26,7 @@ public class Issue {
     private String priority;
 
     @JsonProperty("component")
-    private String component;
+    private Component component;
 
     @JsonProperty("content")
     private Content content;
@@ -61,20 +63,15 @@ public class Issue {
         List<String> labels = new java.util.ArrayList<>();
         if (kind != null && !kind.isBlank()) labels.add(kind);
         if (priority != null && !priority.isBlank()) labels.add(priority);
-        if (component != null && !component.isBlank()) labels.add(component);
+        if (component != null && component.getName() != null && !component.getName().isBlank())
+            labels.add(component.getName());
         return labels;
     }
+
 
     public String getWebUrl() {
         return links != null && links.getHtml() != null ? links.getHtml().getHref() : null;
     }
-}
-
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true)
-class Content {
-    @JsonProperty("raw")
-    private String raw;
 }
 
 @Data
